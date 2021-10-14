@@ -1,0 +1,144 @@
+import random
+
+winning_cases = ([1,2,3], [1,5,9], [1,4,7], [2,5,8],
+                 [3,6,9], [3,5,7], [3,2,1],
+                 [4,5,6], [6,5,4],
+                 [7,8,9], [7,5,3], [7,4,1], [8,5,2],
+                 [9,6,3], [9,5,1], [9,8,7])
+
+user_input_list = []
+computer_input_list = []
+count_user_steps = 0
+count_computer_steps = 0
+display_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+##display the match
+def display(display_list):
+    for i in range(1, 10):
+        print(display_list[i], end = " ")
+        if i % 3 == 0:
+            print("\n")
+#user move
+def user_move():
+    global count_user_steps
+    user_input = eval(input("User move: "))
+    if user_input < 1 or user_input > 9 or user_input in user_input_list or user_input in computer_input_list:
+        print("Please enter a legal move!")
+        user_move()
+    else:
+        user_input_list.append(user_input)
+        display_list[user_input] = "O"
+        display(display_list)
+        if count_user_steps >= 3:
+            count_user_steps += 1
+
+#computer move
+def computer_move():
+    global count_computer_steps
+    if count_computer_steps == 0:
+        computer_input = 5
+        computer_input_list.append(5)
+        display_list[computer_input] = "X"
+        display(display_list)
+        # count_computer_steps = count_computer_steps + 1
+    elif count_computer_steps < 3:
+        computer_input = random.randint(1, 9)
+        if computer_input in user_input_list or computer_input in computer_input_list:
+            computer_move()
+        else:
+            computer_input_list.append(computer_input)
+            display_list[computer_input] = "X"
+            display(display_list)
+    elif count_computer_steps >= 3:
+        computer_input = random.randint(1, 9)
+        if computer_input in user_input_list or computer_input in computer_input_list:
+            computer_move()
+        else:
+            computer_input_list.append(computer_input)
+            display_list[computer_input] = "X"
+            display(display_list)
+            count_computer_steps += 1
+    # return count_computer_steps
+
+def computer_won():
+    if (1 in computer_input_list and 5 in computer_input_list and 9 in computer_input_list) \
+        or (2 in computer_input_list and 5 in computer_input_list and 8 in computer_input_list)\
+        or (3 in computer_input_list and 5 in computer_input_list and 7 in computer_input_list)\
+        or (4 in computer_input_list and 5 in computer_input_list and 6 in computer_input_list):
+        return True
+
+def user_won():
+    if (1 in user_input_list and 2 in user_input_list and 3 in user_input_list) \
+        or (1 in user_input_list and 4 in user_input_list and 7 in user_input_list) \
+        or (3 in user_input_list and 6 in user_input_list and 9 in user_input_list) \
+        or (7 in user_input_list and 8 in user_input_list and 9 in user_input_list):
+        return True
+
+def check_won(count_computer_steps, count_user_steps):
+    result = ""
+    if computer_won() == True:
+        result = "Computer won!"
+    if user_won() == True:
+        result = "User won!"
+    if count_computer_steps + count_user_steps == 9 and computer_won() != True and user_won() != True:
+        result = "It is a tie"
+    return result
+
+def user_move_after_3steps():
+    result = ""
+    user_move()
+    check_won(count_computer_steps, count_user_steps)
+    if check_won(count_computer_steps, count_user_steps) == "User won!":
+        result = "User won!. Congrats"
+        print(result)
+        return result
+    elif check_won(count_computer_steps, count_user_steps) == "It is a tie":
+        result = "It is a tie"
+        print(result)
+        return result
+    else:
+        computer_move_after_3steps()
+
+def computer_move_after_3steps():
+    result = ""
+    computer_move()
+    check_won(count_computer_steps, count_user_steps)
+    if check_won(count_computer_steps, count_user_steps) == "Computer won!":
+        result = "Computer won!. Congrats"
+        print(result)
+        return result
+    elif check_won(count_computer_steps, count_user_steps) == "It is a tie":
+        result = "It is a tie"
+        print(result)
+        return result
+    else:
+        user_move_after_3steps()
+
+def play():
+    global count_user_steps
+    global count_computer_steps
+    while count_user_steps <= 3 and 0 <= count_computer_steps <= 3:
+        if count_computer_steps < 3 and count_user_steps < 3:
+            computer_move()
+            user_move()
+            # count_user_steps += 1
+            # count_computer_steps += 1
+            # print("comp_step: ", count_computer_steps, "user_Steps: ", count_user_steps)
+
+        if count_computer_steps == 3:
+            check_won(count_computer_steps, count_user_steps)
+            if check_won(count_computer_steps, count_user_steps) == "User won!" \
+                or check_won(count_computer_steps, count_user_steps) == "Computer won!":
+                print(check_won(count_computer_steps, count_user_steps))
+                return
+            else:
+                computer_move_after_3steps()
+            # print(check_won())
+            # count_user_steps += 1
+            # count_computer_steps += 1
+        count_user_steps += 1
+        count_computer_steps += 1
+        print()
+
+play()
+
